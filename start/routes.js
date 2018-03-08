@@ -14,7 +14,29 @@
 */
 
 const Route = use('Route')
+const defaultApiRoute = '/api/v1'
 
-Route.get('/', ({ request }) => {
-  return { greeting: 'Hello world in JSON' }
-})
+Route
+  .group('users', () => {
+    Route.resource('/users', 'UserController')
+      .apiOnly()    
+  })
+  .middleware('auth')
+  .prefix(defaultApiRoute)
+  .formats(['json'])
+
+Route
+  .group('auth', () => {
+    Route.get('/auth/user', 'AuthController.user') 
+    .middleware('auth')
+
+    Route.post('/auth/login', 'AuthController.login')
+    Route.post('/auth/logout', 'AuthController.logout')
+    
+  })
+  .prefix(defaultApiRoute)
+  .formats(['json'])
+
+  Route.get('/signatures/:filename/:filetype', 'SignatureController.show')
+  .prefix(defaultApiRoute)
+  .formats(['json'])
